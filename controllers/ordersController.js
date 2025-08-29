@@ -27,18 +27,23 @@ exports.getOrderById = async (req, res) => {
 
 // Create a new order
 exports.createOrder = async (req, res) => {
+  const { user_id, items, total } = req.body;
+
+  // Validate user_id and total are numbers
+  if (!user_id || isNaN(Number(user_id))) {
+    return res.status(400).json({ message: 'user_id must be a number' });
+  }
+  if (!Array.isArray(items)) {
+    return res.status(400).json({ message: 'items must be an array' });
+  }
+  if (typeof total !== 'number') {
+    return res.status(400).json({ message: 'total must be a number' });
+  }
+
   try {
-    const { user_id, items, status } = req.body;
-    // Calculate total (sum of quantity * product price for each item)
-    let total = 0;
-    for (const item of items) {
-      const prodRes = await db.query('SELECT price FROM products WHERE id = $1', [item.product_id]);
-      if (prodRes.rows.length === 0) continue;
-      total += prodRes.rows[0].price * item.quantity;
-    }
     const result = await db.query(
       'INSERT INTO orders (user_id, items, status, total) VALUES ($1, $2, $3, $4) RETURNING *',
-      [user_id, JSON.stringify(items), status || 'pending', total]
+      [user_id, JSON.stringify(items), 'pending', total]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
