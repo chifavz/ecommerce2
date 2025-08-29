@@ -9,6 +9,7 @@ exports.getCart = async (req, res) => {
     }
     res.json({ cart: result.rows });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
@@ -23,6 +24,7 @@ exports.addToCart = async (req, res) => {
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
@@ -40,6 +42,7 @@ exports.updateCartItem = async (req, res) => {
     }
     res.json(result.rows[0]);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
@@ -57,6 +60,7 @@ exports.removeFromCart = async (req, res) => {
     }
     res.json({ message: 'Item removed from cart' });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
@@ -67,6 +71,7 @@ exports.clearCart = async (req, res) => {
     await db.query('DELETE FROM carts WHERE user_id = $1', [req.params.userId]);
     res.json({ message: 'Cart cleared' });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
